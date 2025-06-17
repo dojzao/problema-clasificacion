@@ -54,4 +54,4 @@
 
 ## Enlace al documento
 
-https://dojzao.github.io/analisis-exploratorio/
+https://dojzao.github.io/problema-clasificacion/
