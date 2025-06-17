@@ -1,0 +1,11 @@
+---
+title: "Acerca De"
+---
+
+Diego Jiménez Alvarado
+
+Github: [Ver mi repositorio en GitHub](https://github.com/dojzao/problema-clasificacion)
+
+Datos obtenidos de la página de ESPN: [https://www.espn.co.cr/](https://www.espn.co.cr/basquetbol/nba/resultados)
+
+2025

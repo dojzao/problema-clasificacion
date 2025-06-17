@@ -1,0 +1,102 @@
+---
+title: "Preparación de los datos"
+---
+
+```{python}
+#| echo: false
+#| warning: false
+
+import os
+import math
+import joblib
+import warnings
+import pandas as pd
+import numpy  as np
+from datetime import date
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+```
+
+```{python}
+#| echo: false
+
+datos = pd.read_csv('data/nba_juegos.csv', delimiter = ';', decimal = ".")
+```
+
+# Eliminar registros con NA
+
+```{python}
+#| echo: true
+
+datos = datos.dropna()
+```
+
+# Eliminar registros con 0 en la puntuación
+
+```{python}
+#| echo: true
+
+datos = datos.loc[(datos.PTS_visita > 0) & (datos.PTS_local > 0), :]
+```
+
+# Construir variable a predecir
+
+```{python}
+#| echo: true
+
+datos["ganador"] = np.where(datos['PTS_local'] > datos['PTS_visita'], 'local', 'visita')
+```
+
+# Transformar variable con la fecha por el mes
+
+```{python}
+#| echo: true
+
+datos['fecha'] = [pd.to_datetime(x).month for x in datos['fecha']]
+```
+
+# Eliminar columnas que no aportan
+
+```{python}
+#| echo: true
+
+datos = datos.drop(columns=['id', 'pts', 'PTS_local', 'PTS_visita'])
+```
+
+# Convertir a categórico.
+
+```{python}
+#| echo: true
+
+datos['fecha'] = datos['fecha'].astype('category')
+datos['lugar'] = datos['lugar'].astype('category')
+datos['local'] = datos['local'].astype('category')
+datos['away']  = datos['away'].astype('category')
+```
+
+# Datos
+
+```{python}
+#| echo: true
+
+datos.info()
+```
+
+

@@ -1,0 +1,145 @@
+---
+title: "Modelado"
+---
+
+```{python}
+#| echo: false
+#| warning: false
+
+import os
+import math
+import joblib
+import warnings
+import pandas as pd
+import numpy  as np
+from datetime import date
+import plotly.graph_objects as go
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import cross_val_predict
+
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+```
+
+```{python}
+#| echo: false
+
+datos = pd.read_csv('data/nba_juegos.csv', delimiter = ';', decimal = ".")
+datos = datos.dropna()
+datos = datos.loc[(datos.PTS_visita > 0) & (datos.PTS_local > 0), :]
+datos["ganador"] = np.where(datos['PTS_local'] > datos['PTS_visita'], 'local', 'visita')
+datos['fecha'] = [pd.to_datetime(x).month for x in datos['fecha']]
+datos = datos.drop(columns=['id', 'pts', 'PTS_local', 'PTS_visita', 'lugar'])
+datos['fecha'] = datos['fecha'].astype('category')
+datos['local'] = datos['local'].astype('category')
+datos['away']  = datos['away'].astype('category')
+```
+
+# Preparación
+
+```{python}
+#| echo: true
+
+X = datos.loc[:, datos.columns != 'ganador']
+X = pd.DataFrame(X, columns = X.columns)
+y = datos["ganador"]
+
+procesamiento = ColumnTransformer(
+  transformers = [
+    ('cat', OneHotEncoder(), ['fecha', 'local', 'away'])
+  ],
+  remainder = 'passthrough'
+)
+```
+
+# Modelos
+
+## KNN
+
+```{python}
+#| echo: true
+
+modelo_knn = Pipeline(steps = [
+  ('preprocessor', procesamiento),
+  ('scaler', StandardScaler(with_mean=False)),
+  ('modelo', KNeighborsClassifier(n_neighbors = 5, algorithm = "brute"))
+])
+
+pred_knn = cross_val_predict(modelo_knn, X, y, cv = 5)
+pred_knn
+```
+
+## Árbol
+
+```{python}
+#| echo: true
+
+modelo_arbol = Pipeline(steps = [
+  ('preprocessor', procesamiento),
+  ('scaler', StandardScaler(with_mean=False)),
+  ('modelo', DecisionTreeClassifier(criterion = 'gini', max_depth = 2))
+])
+
+pred_arbol = cross_val_predict(modelo_arbol, X, y, cv = 5)
+pred_arbol
+```
+
+## Bosques
+
+```{python}
+#| echo: true
+
+modelo_bosques = Pipeline(steps = [
+  ('preprocessor', procesamiento),
+  ('scaler', StandardScaler(with_mean=False)),
+  ('modelo', RandomForestClassifier(n_estimators = 500, criterion = "gini", min_samples_split = 50))
+])
+
+pred_bosques = cross_val_predict(modelo_bosques, X, y, cv = 5)
+pred_bosques
+```
+
+## Potenciación
+
+```{python}
+#| echo: true
+
+modelo_ada = Pipeline(steps = [
+  ('preprocessor', procesamiento),
+  ('scaler', StandardScaler(with_mean=False)),
+  ('modelo', GradientBoostingClassifier(n_estimators = 500, max_depth = 2, learning_rate = 0.1, min_samples_split = 10))
+])
+
+pred_ada = cross_val_predict(modelo_ada, X, y, cv = 5)
+pred_ada
+```
+
+## SVM
+
+```{python}
+#| echo: true
+
+modelo_svm = Pipeline(steps = [
+  ('preprocessor', procesamiento),
+  ('scaler', StandardScaler(with_mean=False)),
+  ('modelo', SVC(kernel = 'rbf', gamma = 'scale'))
+])
+
+pred_svm = cross_val_predict(modelo_svm, X, y, cv = 5)
+pred_svm
+```

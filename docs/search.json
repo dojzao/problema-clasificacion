@@ -1,0 +1,121 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Introducción",
+    "section": "",
+    "text": "Problema de clasificación utilizando datos que contienen estadísticas de partidos de la NBA, incluyendo información sobre el lugar, fecha, equipos involucrados y estadísticas individuales para los equipos local y visitante. Se va a predecir si el equipo local o el visitante gana el encuentro.\n\nPaquetes\n\nimport os\nimport math\nimport joblib\nimport warnings\nimport pandas as pd\nimport numpy  as np\nfrom datetime import date\nimport plotly.graph_objects as go\n\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.model_selection import KFold\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.metrics import confusion_matrix\nfrom sklearn.model_selection import cross_val_predict\n\nfrom sklearn.preprocessing import OneHotEncoder\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.pipeline import Pipeline\n\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.svm import SVC\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import AdaBoostClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.ensemble import GradientBoostingClassifier\nfrom sklearn.naive_bayes import GaussianNB\nfrom sklearn.discriminant_analysis import LinearDiscriminantAnalysis\nfrom sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis\n\n\n\nCarga de datos\n\ndatos = pd.read_csv('data/nba_juegos.csv', delimiter = ';', decimal = \".\")\ndatos\n\n\n\n\n\n\n\n\nfecha\nlugar\nlocal\naway\nid\npts\nMIN_local\nFG_local\nPT3_local\nTL_local\n...\nTL_visita\nOREB_visita\nDREB_visita\nREB_visita\nAST_visita\nSTL_visita\nTOV_visita\nPF_visita\nPM_visita\nPTS_visita\n\n\n\n\n0\n2023-01-01\nTN\nGrizzlies\nKings\n401468702\n226\n0.000000\n0.000000\n0.000000\n0.000000\n...\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n\n\n1\n2023-01-01\nWI\nBucks\nWizards\n401468703\n213\n0.000000\n0.000000\n0.000000\n0.000000\n...\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n\n\n2\n2023-01-01\nCO\nNuggets\nCeltics\n401468704\n234\n0.000000\n0.000000\n0.000000\n0.000000\n...\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n\n\n3\n2023-01-02\nNY\nKnicks\nSuns\n401468705\n185\n0.000000\n0.000000\n0.000000\n0.000000\n...\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n\n\n4\n2023-01-02\nNC\nHornets\nLakers\n401468706\n236\n0.000000\n0.000000\n0.000000\n0.000000\n...\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n0.000000\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n2729\n2025-01-03\nOK\nThunder\nKnicks\n401705039\n224\n229.333333\n5.419823\n4.313889\n2.575397\n...\n5.009524\n12.300000\n35.100000\n47.400000\n31.900000\n7.900000\n18.200000\n20.000000\n-34.900000\n125.900000\n\n\n2730\n2025-01-03\nTX\nMavericks\nCavaliers\n401705040\n256\n181.333333\n5.469890\n3.153846\n2.025000\n...\n4.495833\n13.333333\n41.000000\n54.333333\n42.166667\n4.666667\n19.500000\n18.833333\n-25.333333\n142.333333\n\n\n2731\n2025-01-03\nCO\nNuggets\nSpurs\n401705041\n223\n206.833333\n3.859577\n2.543737\n5.183333\n...\n7.263968\n12.766667\n49.566667\n62.333333\n44.466667\n10.616667\n21.483333\n22.683333\n-31.566667\n168.683333\n\n\n2732\n2025-01-03\nCA\nKings\nGrizzlies\n401705042\n271\n221.833333\n3.705222\n3.760185\n4.192460\n...\n4.520370\n9.783333\n29.683333\n39.466667\n12.066667\n5.983333\n13.000000\n21.950000\n-13.466667\n95.733333\n\n\n2733\n2025-01-03\nCA\nLakers\nHawks\n401705043\n221\n277.416667\n4.964283\n3.246483\n3.343254\n...\n2.880952\n13.416667\n34.666667\n48.083333\n26.416667\n10.916667\n13.000000\n20.166667\n-33.166667\n121.000000\n\n\n\n\n2734 rows × 32 columns"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Acerca De",
+    "section": "",
+    "text": "Diego Jiménez Alvarado\nGithub: Ver mi repositorio en GitHub\nDatos obtenidos de la página de ESPN: https://www.espn.co.cr/\n2025"
+  },
+  {
+    "objectID": "analisis.html",
+    "href": "analisis.html",
+    "title": "Análisis de los datos",
+    "section": "",
+    "text": "Distribución de la variable a predecir\n\naux = datos.loc[:, \"ganador\"].value_counts()\n\nfig = go.Figure()\nno_plot = fig.add_trace(\n  go.Pie(labels = aux.index, values = aux.to_list())\n)\nfig.update_layout(title = \"Ganador\")\nfig.show()"
+  },
+  {
+    "objectID": "preparacion.html",
+    "href": "preparacion.html",
+    "title": "Preparación de los datos",
+    "section": "",
+    "text": "Eliminar registros con NA\n\ndatos = datos.dropna()\n\n\n\nEliminar registros con 0 en la puntuación\n\ndatos = datos.loc[(datos.PTS_visita &gt; 0) & (datos.PTS_local &gt; 0), :]\n\n\n\nConstruir variable a predecir\n\ndatos[\"ganador\"] = np.where(datos['PTS_local'] &gt; datos['PTS_visita'], 'local', 'visita')\n\n\n\nTransformar variable con la fecha por el mes\n\ndatos['fecha'] = [pd.to_datetime(x).month for x in datos['fecha']]\n\n\n\nEliminar columnas que no aportan\n\ndatos = datos.drop(columns=['id', 'pts', 'PTS_local', 'PTS_visita'])\n\n\n\nConvertir a categórico.\n\ndatos['fecha'] = datos['fecha'].astype('category')\ndatos['lugar'] = datos['lugar'].astype('category')\ndatos['local'] = datos['local'].astype('category')\ndatos['away']  = datos['away'].astype('category')\n\n\n\nDatos\n\ndatos.info()\n\n&lt;class 'pandas.core.frame.DataFrame'&gt;\nIndex: 2590 entries, 14 to 2733\nData columns (total 29 columns):\n #   Column       Non-Null Count  Dtype   \n---  ------       --------------  -----   \n 0   fecha        2590 non-null   category\n 1   lugar        2590 non-null   category\n 2   local        2590 non-null   category\n 3   away         2590 non-null   category\n 4   MIN_local    2590 non-null   float64 \n 5   FG_local     2590 non-null   float64 \n 6   PT3_local    2590 non-null   float64 \n 7   TL_local     2590 non-null   float64 \n 8   OREB_local   2590 non-null   float64 \n 9   DREB_local   2590 non-null   float64 \n 10  REB_local    2590 non-null   float64 \n 11  AST_local    2590 non-null   float64 \n 12  STL_local    2590 non-null   float64 \n 13  TOV_local    2590 non-null   float64 \n 14  PF_local     2590 non-null   float64 \n 15  PM_local     2590 non-null   float64 \n 16  MIN_visita   2590 non-null   float64 \n 17  FG_visita    2590 non-null   float64 \n 18  PT3_visita   2590 non-null   float64 \n 19  TL_visita    2590 non-null   float64 \n 20  OREB_visita  2590 non-null   float64 \n 21  DREB_visita  2590 non-null   float64 \n 22  REB_visita   2590 non-null   float64 \n 23  AST_visita   2590 non-null   float64 \n 24  STL_visita   2590 non-null   float64 \n 25  TOV_visita   2590 non-null   float64 \n 26  PF_visita    2590 non-null   float64 \n 27  PM_visita    2590 non-null   float64 \n 28  ganador      2590 non-null   object  \ndtypes: category(4), float64(24), object(1)\nmemory usage: 540.4+ KB"
+  },
+  {
+    "objectID": "modelado.html",
+    "href": "modelado.html",
+    "title": "Modelado",
+    "section": "",
+    "text": "X = datos.loc[:, datos.columns != 'ganador']\nX = pd.DataFrame(X, columns = X.columns)\ny = datos[\"ganador\"]\n\nprocesamiento = ColumnTransformer(\n  transformers = [\n    ('cat', OneHotEncoder(), ['fecha', 'local', 'away'])\n  ],\n  remainder = 'passthrough'\n)"
+  },
+  {
+    "objectID": "modelado.html#knn",
+    "href": "modelado.html#knn",
+    "title": "Modelado",
+    "section": "KNN",
+    "text": "KNN\n\nmodelo_knn = Pipeline(steps = [\n  ('preprocessor', procesamiento),\n  ('scaler', StandardScaler(with_mean=False)),\n  ('modelo', KNeighborsClassifier(n_neighbors = 5, algorithm = \"brute\"))\n])\n\npred_knn = cross_val_predict(modelo_knn, X, y, cv = 5)\npred_knn\n\narray(['local', 'local', 'local', ..., 'visita', 'local', 'local'],\n      dtype=object)"
+  },
+  {
+    "objectID": "modelado.html#knn-1",
+    "href": "modelado.html#knn-1",
+    "title": "Modelado",
+    "section": "KNN",
+    "text": "KNN\n\nmodelo_knn = Pipeline(steps = [\n  ('preprocessor', procesamiento),\n  ('scaler', StandardScaler(with_mean=False)),\n  ('modelo', KNeighborsClassifier(n_neighbors = 5, algorithm = \"brute\"))\n])\n\npred_knn = cross_val_predict(modelo_knn, X, y, cv = 5)\npred_knn\n\narray(['local', 'local', 'local', ..., 'visita', 'local', 'local'],\n      dtype=object)"
+  },
+  {
+    "objectID": "modelado.html#árbol",
+    "href": "modelado.html#árbol",
+    "title": "Modelado",
+    "section": "Árbol",
+    "text": "Árbol\n\nmodelo_arbol = Pipeline(steps = [\n  ('preprocessor', procesamiento),\n  ('scaler', StandardScaler(with_mean=False)),\n  ('modelo', DecisionTreeClassifier(criterion = 'gini', max_depth = 2))\n])\n\npred_arbol = cross_val_predict(modelo_arbol, X, y, cv = 5)\npred_arbol\n\narray(['visita', 'visita', 'local', ..., 'visita', 'local', 'local'],\n      dtype=object)"
+  },
+  {
+    "objectID": "modelado.html#bosques",
+    "href": "modelado.html#bosques",
+    "title": "Modelado",
+    "section": "Bosques",
+    "text": "Bosques\n\nmodelo_bosques = Pipeline(steps = [\n  ('preprocessor', procesamiento),\n  ('scaler', StandardScaler(with_mean=False)),\n  ('modelo', RandomForestClassifier(n_estimators = 500, criterion = \"gini\", min_samples_split = 50))\n])\n\npred_bosques = cross_val_predict(modelo_bosques, X, y, cv = 5)\npred_bosques\n\narray(['visita', 'visita', 'local', ..., 'visita', 'local', 'local'],\n      dtype=object)"
+  },
+  {
+    "objectID": "modelado.html#potenciación",
+    "href": "modelado.html#potenciación",
+    "title": "Modelado",
+    "section": "Potenciación",
+    "text": "Potenciación\n\nmodelo_ada = Pipeline(steps = [\n  ('preprocessor', procesamiento),\n  ('scaler', StandardScaler(with_mean=False)),\n  ('modelo', GradientBoostingClassifier(n_estimators = 500, max_depth = 2, learning_rate = 0.1, min_samples_split = 10))\n])\n\npred_ada = cross_val_predict(modelo_ada, X, y, cv = 5)\npred_ada\n\narray(['visita', 'visita', 'local', ..., 'visita', 'local', 'local'],\n      dtype=object)"
+  },
+  {
+    "objectID": "modelado.html#svm",
+    "href": "modelado.html#svm",
+    "title": "Modelado",
+    "section": "SVM",
+    "text": "SVM\n\nmodelo_svm = Pipeline(steps = [\n  ('preprocessor', procesamiento),\n  ('scaler', StandardScaler(with_mean=False)),\n  ('modelo', SVC(kernel = 'rbf', gamma = 'scale'))\n])\n\npred_svm = cross_val_predict(modelo_svm, X, y, cv = 5)\npred_svm\n\narray(['visita', 'visita', 'local', ..., 'visita', 'local', 'local'],\n      dtype=object)"
+  },
+  {
+    "objectID": "evaluacion.html",
+    "href": "evaluacion.html",
+    "title": "Modelado",
+    "section": "",
+    "text": "mc_knn = confusion_matrix(y, pred_knn)\nmc_knn\n\narray([[882, 425],\n       [427, 856]])\n\n\n\n\n\n\nmc_arbol = confusion_matrix(y, pred_arbol)\nmc_arbol\n\narray([[993, 314],\n       [312, 971]])\n\n\n\n\n\n\nmc_bosques = confusion_matrix(y, pred_bosques)\nmc_bosques\n\narray([[1097,  210],\n       [ 224, 1059]])\n\n\n\n\n\n\nmc_ada = confusion_matrix(y, pred_ada)\nmc_ada\n\narray([[1097,  210],\n       [ 230, 1053]])\n\n\n\n\n\n\nmc_svm = confusion_matrix(y, pred_svm)\nmc_svm\n\narray([[1098,  209],\n       [ 205, 1078]])"
+  },
+  {
+    "objectID": "evaluacion.html#knn",
+    "href": "evaluacion.html#knn",
+    "title": "Modelado",
+    "section": "",
+    "text": "mc_knn = confusion_matrix(y, pred_knn)\nmc_knn\n\narray([[882, 425],\n       [427, 856]])"
+  },
+  {
+    "objectID": "evaluacion.html#árbol",
+    "href": "evaluacion.html#árbol",
+    "title": "Modelado",
+    "section": "",
+    "text": "mc_arbol = confusion_matrix(y, pred_arbol)\nmc_arbol\n\narray([[993, 314],\n       [312, 971]])"
+  },
+  {
+    "objectID": "evaluacion.html#bosques",
+    "href": "evaluacion.html#bosques",
+    "title": "Modelado",
+    "section": "",
+    "text": "mc_bosques = confusion_matrix(y, pred_bosques)\nmc_bosques\n\narray([[1097,  210],\n       [ 224, 1059]])"
+  },
+  {
+    "objectID": "evaluacion.html#potenciación",
+    "href": "evaluacion.html#potenciación",
+    "title": "Modelado",
+    "section": "",
+    "text": "mc_ada = confusion_matrix(y, pred_ada)\nmc_ada\n\narray([[1097,  210],\n       [ 230, 1053]])"
+  },
+  {
+    "objectID": "evaluacion.html#svm",
+    "href": "evaluacion.html#svm",
+    "title": "Modelado",
+    "section": "",
+    "text": "mc_svm = confusion_matrix(y, pred_svm)\nmc_svm\n\narray([[1098,  209],\n       [ 205, 1078]])"
+  }
+]

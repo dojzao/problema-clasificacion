@@ -1,0 +1,67 @@
+---
+title: "Análisis de los datos"
+---
+
+```{python}
+#| echo: false
+#| warning: false
+
+import os
+import math
+import joblib
+import warnings
+import pandas as pd
+import numpy  as np
+from datetime import date
+import plotly.graph_objects as go
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+```
+
+```{python}
+#| echo: false
+
+datos = pd.read_csv('data/nba_juegos.csv', delimiter = ';', decimal = ".")
+datos = datos.dropna()
+datos = datos.loc[(datos.PTS_visita > 0) & (datos.PTS_local > 0), :]
+datos["ganador"] = np.where(datos['PTS_local'] > datos['PTS_visita'], 'local', 'visita')
+datos['fecha'] = [pd.to_datetime(x).month for x in datos['fecha']]
+datos = datos.drop(columns=['id', 'pts', 'PTS_local', 'PTS_visita'])
+datos['fecha'] = datos['fecha'].astype('category')
+datos['lugar'] = datos['lugar'].astype('category')
+datos['local'] = datos['local'].astype('category')
+datos['away']  = datos['away'].astype('category')
+```
+
+# Distribución de la variable a predecir
+
+```{python}
+#| echo: true
+
+aux = datos.loc[:, "ganador"].value_counts()
+
+fig = go.Figure()
+no_plot = fig.add_trace(
+  go.Pie(labels = aux.index, values = aux.to_list())
+)
+fig.update_layout(title = "Ganador")
+fig.show()
+```
+

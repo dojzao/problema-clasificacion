@@ -1,0 +1,50 @@
+---
+title: "Introducción"
+---
+
+Problema de clasificación utilizando datos que contienen estadísticas de partidos de la NBA, incluyendo información sobre el lugar, fecha, equipos involucrados y estadísticas individuales para los equipos local y visitante. Se va a predecir si el equipo local o el visitante gana el encuentro.
+
+# Paquetes
+
+```{python}
+#| echo: true
+#| warning: false
+
+import os
+import math
+import joblib
+import warnings
+import pandas as pd
+import numpy  as np
+from datetime import date
+import plotly.graph_objects as go
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import cross_val_predict
+
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+```
+
+# Carga de datos
+
+```{python}
+#| echo: true
+
+datos = pd.read_csv('data/nba_juegos.csv', delimiter = ';', decimal = ".")
+datos
+```
